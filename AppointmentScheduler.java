@@ -1,5 +1,9 @@
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 class Appointment {
     private String date;
@@ -42,7 +46,7 @@ public class AppointmentScheduler {
             appointments.remove(index);
             System.out.println("Appointment removed successfully.");
         } else {
-            System.out.println("Invalid index.");
+            System.out.println("Invalid index. Please enter a valid index.");
         }
     }
 
@@ -57,6 +61,24 @@ public class AppointmentScheduler {
                         ", Time: " + appointment.getTime() +
                         ", Description: " + appointment.getDescription());
             }
+        }
+    }
+
+    private boolean isValidDate(String date) {
+        try {
+            LocalDate.parse(date, DateTimeFormatter.ofPattern("MM/dd/yyyy"));
+            return true;
+        } catch (DateTimeParseException e) {
+            return false;
+        }
+    }
+
+    private boolean isValidTime(String time) {
+        try {
+            LocalTime.parse(time, DateTimeFormatter.ofPattern("HH:mm"));
+            return true;
+        } catch (DateTimeParseException e) {
+            return false;
         }
     }
 
@@ -78,8 +100,18 @@ public class AppointmentScheduler {
                 case 1:
                     System.out.print("Enter date (MM/DD/YYYY): ");
                     String date = scanner.nextLine();
+                    if (!scheduler.isValidDate(date)) {
+                        System.out.println("Invalid date format. Please enter the date in MM/DD/YYYY format.");
+                        break;
+                    }
+
                     System.out.print("Enter time (HH:MM): ");
                     String time = scanner.nextLine();
+                    if (!scheduler.isValidTime(time)) {
+                        System.out.println("Invalid time format. Please enter the time in HH:MM format.");
+                        break;
+                    }
+
                     System.out.print("Enter description: ");
                     String description = scanner.nextLine();
                     scheduler.addAppointment(new Appointment(date, time, description));
@@ -94,12 +126,11 @@ public class AppointmentScheduler {
                     break;
                 case 4:
                     System.out.println("Exiting program...");
+                    scanner.close();
                     System.exit(0);
                 default:
                     System.out.println("Invalid choice. Please enter a number between 1 and 4.");
-                    scanner.close();
             }
-            
         }
     }
 }
